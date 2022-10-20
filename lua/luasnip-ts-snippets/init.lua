@@ -2,6 +2,7 @@ local ls = require "luasnip"
 local M = {}
 
 local snippets_path = "lua/luasnip-ts-snippets/luasnippets/"
+local module_path = "luasnip-ts-snippets.luasnippets."
 
 M.default_cfg = {
    filetypes = {
@@ -16,7 +17,7 @@ function M.setup(opts)
       local file_paths = vim.api.nvim_get_runtime_file(snippets_path .. ft .. "/snip_*.lua", true)
       for _, path in ipairs(file_paths) do
          local file_name = path:match("^.*/(.+)%.lua$")
-         ls.add_snippets(ft, require(snippets_path .. ft .. "/" .. file_name))
+         ls.add_snippets(ft, require(module_path .. ft .. "." .. file_name))
       end
    end
 end
