@@ -16,6 +16,11 @@ M.function_query = [[
    return_type: (type) @retval)
 ]]
 
+M.class_query = [[
+(class_definition
+   name: (identifier) @cls_name)
+]]
+
 M.function_declaration = [[
 <decorator>
 def <name>(<ref><params>) ->> <retval>:

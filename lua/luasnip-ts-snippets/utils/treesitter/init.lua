@@ -1,17 +1,15 @@
 local ts = vim.treesitter
 local tsu = require "nvim-treesitter.ts_utils"
 local tsl = require "nvim-treesitter.locals"
-local nu = require "after.nvim_utils"
+local nu = require "luasnip-ts-snippets.utils"
 local l = require "luasnip.session".config.snip_env
 
 local M = {}
 M.function_types = { "function_definition", "function_declaration" }
-
-function M.refresh_syntax_tree()
-   ts.get_parser(0):parse()
-end
+M.class_types = { "class_definition" }
 
 function M.get_root_node(lookup_array)
+   ts.get_parser(0):parse()
    for scope in tsl.iter_scope_tree(tsu.get_node_at_cursor(), 0) do
       if nu.in_array(lookup_array, scope:type()) then return scope end
    end
@@ -27,7 +25,6 @@ end
 -- @param query { string } the query that should return matches
 -- @return snippet node with the whole docstring
 function M.parse_matches(lookup_array, lines_parser, query, fallback)
-   M.refresh_syntax_tree()
    local root = M.get_root_node(lookup_array)
    if not root then return fallback end
 
@@ -37,6 +34,5 @@ function M.parse_matches(lookup_array, lines_parser, query, fallback)
 
    return l.fmta(lines, nodes)
 end
-
 
 return M

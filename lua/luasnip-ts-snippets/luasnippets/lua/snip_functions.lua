@@ -1,7 +1,7 @@
 local l = require "luasnip.session".config.snip_env
-local u = require "after.plugin.luasnip.utils"
-local ts_utils = require "after.plugin.luasnip.ts_utils"
-local lua_utils = require "after.plugin.luasnip.luasnippets.lua.utils"
+local u = require "luasnip-ts-snippets.utils.snip"
+local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
+local lua_utils = require "luasnip-ts-snippets.luasnippets.lua.utils"
 local ts = vim.treesitter
 
 local bodies = {
@@ -48,15 +48,17 @@ local function snip_node(text, desc, has_name, is_local)
          return l.sn(nil, ts_utils.parse_matches(ts_utils.function_types, param_parser, lua_utils.function_query, l.t ""))
       end, has_name and 2 or 1),
       body = has_name and l.i(5) or l.i(2),
-   }, {strict = false}), u.desc(desc))
+   }, { strict = false }), u.desc(desc))
 end
 
-return { l.s({
-   trig = "f",
-   name = "function definition",
-   dscr = "The boilerplate for different types of functions",
-}, l.c(1, {
-   snip_node(bodies.anonymous, "Anonymous", false, false),
-   snip_node(bodies.regular, "Global", true, false),
-   snip_node(bodies.regular, "Local", true, true),
-})) }
+return {
+   l.s({
+      trig = "function",
+      name = "function definition",
+      dscr = "The boilerplate for different types of functions",
+   }, l.c(1, {
+      snip_node(bodies.anonymous, "Anonymous", false, false),
+      snip_node(bodies.regular, "Global", true, false),
+      snip_node(bodies.regular, "Local", true, true),
+   }))
+}

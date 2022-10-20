@@ -1,9 +1,9 @@
 local isn = require "luasnip".indent_snippet_node
 local l = require "luasnip.session".config.snip_env
-local u = require "after.plugin.luasnip.utils"
-local nu = require "after.nvim_utils"
-local ts_utils = require "after.plugin.luasnip.ts_utils"
-local py_utils = require "after.plugin.luasnip.luasnippets.python.utils"
+local u = require "luasnip-ts-snippets.utils.snip"
+local nu = require "luasnip-ts-snippets.utils"
+local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
+local py_utils = require "luasnip-ts-snippets.luasnippets.python.utils"
 local ts = vim.treesitter
 
 local class_declaration = [[
@@ -47,7 +47,7 @@ local function setup_init(pos)
                ts_utils.function_types,
                param_parser,
                py_utils.function_query,
-               l.t "super().__init__()" -- TODO: get init of superclass
+               l.t "super().__init__()"-- TODO: get init of superclass
             ),
             "$PARENT_INDENT\t"
          )
@@ -63,11 +63,30 @@ local function snip_node(desc, has_init)
    }), u.desc(desc))
 end
 
-return { l.s({
-   trig = "c",
-   name = "Class constructor",
-   dscr = "Create a class",
-}, l.c(1, {
-   snip_node("With initializer", true),
-   snip_node("No __init__", false),
-})) }
+return {
+
+   l.s({
+      trig = "class",
+      name = "Class constructor",
+      dscr = "Create a class",
+   }, l.c(1, {
+      snip_node("With initializer", true),
+      snip_node("No __init__", false),
+   })),
+
+   l.s({
+      trig = "super",
+      name = "Super class call",
+      dscr = "Call super class function",
+   }, l.fmta("super().<method>", {
+      method = l.i(1, "__init__()")
+   })),
+
+   l.s({
+      trig = ".",
+      name = "instance reference",
+      dscr = "Shortcut for accessing an instance member",
+   }, l.fmta("self.<member>", {
+      member = l.i(1)
+   }))
+}

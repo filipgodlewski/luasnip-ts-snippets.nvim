@@ -1,9 +1,9 @@
 local isn = require "luasnip".indent_snippet_node
 local l = require "luasnip.session".config.snip_env
-local u = require "after.plugin.luasnip.utils"
-local nu = require "after.nvim_utils"
-local ts_utils = require "after.plugin.luasnip.ts_utils"
-local py_utils = require "after.plugin.luasnip.luasnippets.python.utils"
+local u = require "luasnip-ts-snippets.utils.snip"
+local nu = require "luasnip-ts-snippets.utils"
+local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
+local py_utils = require "luasnip-ts-snippets.luasnippets.python.utils"
 local ts = vim.treesitter
 
 local function param_parser(matches)
@@ -43,20 +43,53 @@ local function snip_node(desc, decorator, ref)
       params = l.i(2),
       retval = l.i(3, "None"),
       docstring = l.d(4, function()
-         return isn(nil, ts_utils.parse_matches(ts_utils.function_types, param_parser, py_utils.function_query, l.t "pass"), "$PARENT_INDENT\t")
+         return isn(nil,
+            ts_utils.parse_matches(ts_utils.function_types, param_parser, py_utils.function_query, l.t "pass"),
+            "$PARENT_INDENT\t")
       end, { 1, 2, 3 }),
-      body = isn(nil, {l.t {"", ""}, l.i(5, "pass")}, "$PARENT_INDENT\t"),
+      body = isn(nil, { l.t { "", "" }, l.i(5, "pass") }, "$PARENT_INDENT\t"),
    }), u.desc(desc))
 end
 
-return { l.s({
-   trig = "d",
-   name = "Function definition",
-   dscr = "Create a function",
-}, l.c(1, {
-   snip_node("Regular", nil, nil),
-   snip_node("Method", nil, "self"),
-   snip_node("Property getter", "@property", "self"),
-   snip_node("Staticmethod", "@staticmethod", nil),
-   snip_node("Classmethod", "@classmethod", "cls"),
-})) }
+local main_fn = [[
+if __name__ == "__main__":
+    <body>
+]]
+
+return {
+
+   l.s({
+      trig = "def",
+      name = "function definition",
+      dscr = "Create a function",
+   }, l.c(1, {
+      snip_node("Regular", nil, nil),
+      snip_node("Method", nil, "self"),
+      snip_node("Staticmethod", "@staticmethod", nil),
+      snip_node("Classmethod", "@classmethod", "cls"),
+   })),
+
+   l.s({
+      trig = "property",
+      name = "Property boilerplate",
+      dscr = "Create new property",
+   }, l.c(1, {
+      snip_node("Property getter", "@property", "self"),
+      -- TODO: property getter + setter
+   })),
+
+   l.s({
+      trig = "lambda",
+      name = "Lambda function",
+      dscr = "Create an anonymous function",
+   }, l.fmta("lambda <>: <>", {
+      l.i(1, "x"), l.i(2, "x")
+   })),
+
+   l.s({
+      trig = "main",
+      name = "If name is main",
+      dscr = "Create main function boilerplate",
+   }, l.fmta(main_fn, { body = l.i(1, "main()") })),
+
+}
