@@ -1,17 +1,9 @@
+local cfg = require "luasnip-ts-snippets".cfg
 local ls = require "luasnip"
 local f = ls.function_node
 
 
 local M = {}
-
--- repeat the node under given index
--- @param index integer of the node referred to
--- @return any whatever the node is supposed to copy
-function M.copy(index)
-   return f(function(arg)
-      return arg[1]
-   end, { index })
-end
 
 -- get last item after 'sep' in require function
 -- @param index integer of the node referred to
@@ -31,7 +23,7 @@ function M.desc(text)
    return {
       node_ext_opts = {
          active = {
-            virt_text = { { text, "LuaSnipActiveChoice" } }
+            virt_text = { { text, cfg.active_choice_highlight_group } }
          }
       }
    }
