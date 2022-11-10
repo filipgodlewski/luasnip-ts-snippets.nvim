@@ -1,4 +1,4 @@
-local l = require "luasnip.session".config.snip_env
+local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
 
 local bodies = {
@@ -21,20 +21,23 @@ local bodies = {
    <body>
 
    return <rep>
-   ]]
+   ]],
 }
 
 local function snip_node(text, desc)
-   return l.sn(nil, l.fmta(text, { name = l.i(1, "M"), body = l.i(2), rep = l.rep(1), }), desc)
+   return l.sn(nil, l.fmta(text, { name = l.i(1, "M"), body = l.i(2), rep = l.rep(1) }), desc)
 end
 
 return {
-   l.s({
-      trig = "module",
-      name = "Module boilerplate",
-      dscr = "Choose between a default module and a class representation",
-   }, l.c(1, {
-      snip_node(bodies.default, u.desc("Default")),
-      snip_node(bodies.class, u.desc("Class")),
-   }))
+   l.s(
+      {
+         trig = "module",
+         name = "Module boilerplate",
+         dscr = "Choose between a default module and a class representation",
+      },
+      l.c(1, {
+         snip_node(bodies.default, u.desc "Default"),
+         snip_node(bodies.class, u.desc "Class"),
+      })
+   ),
 }

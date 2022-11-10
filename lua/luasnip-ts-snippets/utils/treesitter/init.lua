@@ -2,7 +2,7 @@ local ts = vim.treesitter
 local tsu = require "nvim-treesitter.ts_utils"
 local tsl = require "nvim-treesitter.locals"
 local nu = require "luasnip-ts-snippets.utils"
-local l = require "luasnip.session".config.snip_env
+local l = require("luasnip.session").config.snip_env
 
 local M = {}
 M.function_types = { "function_definition", "function_declaration" }

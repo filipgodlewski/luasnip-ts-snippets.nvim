@@ -1,4 +1,4 @@
-local l = require "luasnip.session".config.snip_env
+local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
 local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
 local lua_utils = require "luasnip-ts-snippets.luasnippets.lua.utils"
@@ -16,6 +16,7 @@ local bodies = {
       <body>
    end
    ]],
+   one_liner = "function(<params>) <body> end",
 }
 
 local function param_parser(matches)
@@ -38,27 +39,42 @@ local function param_parser(matches)
 end
 
 local function snip_node(text, desc, has_name, is_local)
-   return l.sn(nil, l.fmta(text, {
-      locality = is_local and l.t "local " or l.t "",
-      name = l.i(1, "foo"),
-      rep = l.rep(1),
-      params = has_name and l.i(2) or l.i(1),
-      description = l.i(3, "..."),
-      param_docs = l.d(4, function()
-         return l.sn(nil, ts_utils.parse_matches(ts_utils.function_types, param_parser, lua_utils.function_query, l.t ""))
-      end, has_name and 2 or 1),
-      body = has_name and l.i(5) or l.i(2),
-   }, { strict = false }), u.desc(desc))
+   return l.sn(
+      nil,
+      l.fmta(text, {
+         locality = is_local and l.t "local " or l.t "",
+         name = l.i(1, "foo"),
+         rep = l.rep(1),
+         params = has_name and l.i(2) or l.i(1),
+         description = l.i(3, "..."),
+         param_docs = l.d(
+            4,
+            function()
+               return l.sn(
+                  nil,
+                  ts_utils.parse_matches(ts_utils.function_types, param_parser, lua_utils.function_query, l.t "")
+               )
+            end,
+            has_name and 2 or 1
+         ),
+         body = has_name and l.i(5) or l.i(2),
+      }, { strict = false }),
+      u.desc(desc)
+   )
 end
 
 return {
-   l.s({
-      trig = "function",
-      name = "function definition",
-      dscr = "The boilerplate for different types of functions",
-   }, l.c(1, {
-      snip_node(bodies.anonymous, "Anonymous", false, false),
-      snip_node(bodies.regular, "Global", true, false),
-      snip_node(bodies.regular, "Local", true, true),
-   }))
+   l.s(
+      {
+         trig = "function",
+         name = "function definition",
+         dscr = "The boilerplate for different types of functions",
+      },
+      l.c(1, {
+         snip_node(bodies.one_liner, "One-liner", false, false),
+         snip_node(bodies.anonymous, "Anonymous", false, false),
+         snip_node(bodies.regular, "Global", true, false),
+         snip_node(bodies.regular, "Local", true, true),
+      })
+   ),
 }
