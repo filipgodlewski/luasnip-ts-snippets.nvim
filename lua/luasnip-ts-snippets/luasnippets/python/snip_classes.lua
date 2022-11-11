@@ -44,7 +44,7 @@ local function setup_init(pos)
       l.fmta(declarations.init, {
          params = l.i(1),
          body = l.d(2, function()
-            return l.isn(
+            return l.sn(
                nil,
                ts_utils.parse_matches(
                   ts_utils.types.fn,
