@@ -39,7 +39,7 @@ M.property_declarations = {
        <getter_body>
 
    @<rep>.setter
-   def <rep>(self, <value>) ->> None:
+   def <rep>(self, <value>: <value_type>) ->> None:
        <setter_body>
    ]],
 }
