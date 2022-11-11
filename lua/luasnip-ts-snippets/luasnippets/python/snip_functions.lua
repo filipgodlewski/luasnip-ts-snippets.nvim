@@ -64,6 +64,7 @@ local function property_snip_node(desc, lookup_key)
       nil,
       l.fmta(py_utils.property_declarations[lookup_key], {
          name = l.i(1, "foo"),
+         value = l.i(2, "new_value"),
          retval = l.i(2, "None"),
          body = isn(nil, { l.t { "", "" }, l.i(5, "pass") }, "$PARENT_INDENT\t"),
          rep = l.rep(1),
