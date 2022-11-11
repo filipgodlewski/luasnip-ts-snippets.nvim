@@ -39,7 +39,7 @@ local function param_parser(matches)
 end
 
 local function setup_init(pos)
-   return l.sn(
+   return isn(
       pos,
       l.fmta(declarations.init, {
          params = l.i(1), -- TODO: get params of superclass
@@ -54,7 +54,8 @@ local function setup_init(pos)
                )
             )
          end, { 1 }),
-      })
+      }),
+      "$PARENT_INDENT\t"
    )
 end
 
