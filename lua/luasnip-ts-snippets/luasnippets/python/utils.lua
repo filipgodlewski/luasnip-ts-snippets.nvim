@@ -27,4 +27,21 @@ def <name>(<ref><params>) ->> <retval>:
     <docstring><body>
 ]]
 
+M.property_declarations = {
+   getter = [[
+   @property
+   def <name>(self) ->> <retval>:
+       <body>
+   ]],
+   getter_setter = [[
+   @property
+   def <name>(self) ->> <retval>:
+       <getter_body>
+
+   @<rep>.setter
+   def <rep>(self, <value>) ->> None:
+       <setter_body>
+   ]],
+}
+
 return M
