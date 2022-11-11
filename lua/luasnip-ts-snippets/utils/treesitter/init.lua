@@ -5,8 +5,10 @@ local nu = require "luasnip-ts-snippets.utils"
 local l = require("luasnip.session").config.snip_env
 
 local M = {}
-M.function_types = { "function_definition", "function_declaration" }
-M.class_types = { "class_definition" }
+M.types = {
+   fn = { "function_definition", "function_declaration" },
+   cls = { "class_definition" },
+}
 
 function M.get_root_node(lookup_array)
    ts.get_parser(0):parse()

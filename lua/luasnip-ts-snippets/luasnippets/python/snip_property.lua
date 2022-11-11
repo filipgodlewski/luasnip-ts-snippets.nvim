@@ -1,11 +1,27 @@
 local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
-local py_utils = require "luasnip-ts-snippets.luasnippets.python.utils"
 
-local function property_snip_node(desc, lookup_key)
+local declarations = {
+   getter = [[
+   @property
+   def <name>(self) ->> <retval>:
+       <getter_body>
+   ]],
+   getter_setter = [[
+   @property
+   def <name>(self) ->> <retval>:
+       <getter_body>
+
+   @<rep>.setter
+   def <rep>(self, <value>: <value_type>) ->> None:
+       <setter_body>
+   ]],
+}
+
+local function snip_node(desc, lookup_key)
    return l.sn(
       nil,
-      l.fmta(py_utils.property_declarations[lookup_key], {
+      l.fmta(declarations[lookup_key], {
          name = l.i(1, "foo"), -- TODO: add node remembering on switch
          retval = l.i(2, "Any"), -- TODO: If possible, take type of _foo, else Any
          getter_body = l.d(3, function(args)
@@ -34,8 +50,8 @@ return {
          dscr = "Create new property",
       },
       l.c(1, {
-         property_snip_node("Property getter", "getter"),
-         property_snip_node("Property getter+setter", "getter_setter"),
+         snip_node("Property getter", "getter"),
+         snip_node("Property getter+setter", "getter_setter"),
       })
    ),
 }

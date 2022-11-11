@@ -3,8 +3,14 @@ local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
 local nu = require "luasnip-ts-snippets.utils"
 local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
-local py_utils = require "luasnip-ts-snippets.luasnippets.python.utils"
+local py_queries = require "luasnip-ts-snippets.luasnippets.python.queries"
 local ts = vim.treesitter
+
+local function_declaration = [[
+<decorator>
+def <name>(<ref><params>) ->> <retval>:
+    <docstring><body>
+]]
 
 local function param_parser(matches)
    local index = 2
@@ -36,7 +42,7 @@ end
 local function snip_node(desc, decorator, ref)
    return l.sn(
       nil,
-      l.fmta(py_utils.function_declaration, {
+      l.fmta(function_declaration, {
          decorator = l.t(decorator or ""),
          name = l.i(1, "foo"),
          ref = l.t(ref or ""),
@@ -47,7 +53,7 @@ local function snip_node(desc, decorator, ref)
             function()
                return isn(
                   nil,
-                  ts_utils.parse_matches(ts_utils.function_types, param_parser, py_utils.function_query, l.t "pass"),
+                  ts_utils.parse_matches(ts_utils.types.fn, param_parser, py_queries.fn, l.t "pass"),
                   "$PARENT_INDENT\t"
                )
             end,

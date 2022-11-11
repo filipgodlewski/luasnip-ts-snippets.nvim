@@ -52,7 +52,7 @@ local function snip_node(text, desc, has_name, is_local)
             function()
                return l.sn(
                   nil,
-                  ts_utils.parse_matches(ts_utils.function_types, param_parser, lua_utils.function_query, l.t "")
+                  ts_utils.parse_matches(ts_utils.types.fn, param_parser, lua_utils.function_query, l.t "")
                )
             end,
             has_name and 2 or 1
