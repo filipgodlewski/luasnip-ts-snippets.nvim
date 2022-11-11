@@ -31,7 +31,7 @@ M.property_declarations = {
    getter = [[
    @property
    def <name>(self) ->> <retval>:
-       <body>
+       <getter_body>
    ]],
    getter_setter = [[
    @property
