@@ -59,6 +59,19 @@ local function snip_node(desc, decorator, ref)
    )
 end
 
+local function property_snip_node(desc, lookup_key)
+   return l.sn(
+      nil,
+      l.fmta(py_utils.property_declarations[lookup_key], {
+         name = l.i(1, "foo"),
+         retval = l.i(2, "None"),
+         body = isn(nil, { l.t { "", "" }, l.i(5, "pass") }, "$PARENT_INDENT\t"),
+         rep = l.rep(1),
+      }),
+      u.desc(desc)
+   )
+end
+
 local main_fn = [[
 if __name__ == "__main__":
     <body>
@@ -87,8 +100,8 @@ return {
          dscr = "Create new property",
       },
       l.c(1, {
-         snip_node("Property getter", "@property", "self"),
-         -- TODO: property getter + setter
+         property_snip_node("Property getter", "getter"),
+         property_snip_node("Property getter+setter", "getter_setter"),
       })
    ),
 
