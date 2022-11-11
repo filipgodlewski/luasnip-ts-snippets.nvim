@@ -65,10 +65,18 @@ local function property_snip_node(desc, lookup_key)
       l.fmta(py_utils.property_declarations[lookup_key], {
          name = l.i(1, "foo"),
          retval = l.i(2, "None"),
-         getter_body = l.i(3, "return self._foo"),
+         getter_body = l.d(
+            3,
+            function(args) return l.sn(nil, l.i(1, string.format("return self._%s", args[1][1]))) end,
+            { 1 }
+         ),
          rep = l.rep(1),
-         value = l.i(4, "new_value"),
-         setter_body = l.i(5, "self._foo = new_value"),
+         value = l.i(4, "value"),
+         setter_body = l.d(
+            5,
+            function(args) return l.sn(nil, l.i(1, string.format("self._%s = %s", args[1][1], args[2][1]))) end,
+            { 1, 2 }
+         ),
       }, { strict = false }),
       u.desc(desc)
    )
