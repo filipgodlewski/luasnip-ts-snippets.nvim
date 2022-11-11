@@ -9,8 +9,8 @@ return {
          dscr = "Require to a local variable",
       },
       l.c(1, {
-         l.sn(nil, l.fmt('require("{}").{}', { l.i(1), l.i(2, "setup") }), u.desc "Normal"),
-         l.sn(nil, l.fmt('local {} = require "{}"{}', { u.last_text(1, "."), l.i(1), l.i(2) }), u.desc "Import"),
+         l.sn(nil, l.fmta('require("<>").<>', { l.i(1), l.i(2, "setup") }), u.desc "Normal"),
+         l.sn(nil, l.fmta('local <> = require "<>"<>', { u.last_text(1, "."), l.i(1), l.i(2) }), u.desc "Import"),
       })
    ),
 }

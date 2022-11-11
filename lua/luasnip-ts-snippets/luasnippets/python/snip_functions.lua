@@ -67,7 +67,7 @@ local function property_snip_node(desc, lookup_key)
          retval = l.i(2, "None"),
          body = isn(nil, { l.t { "", "" }, l.i(5, "pass") }, "$PARENT_INDENT\t"),
          rep = l.rep(1),
-      }),
+      }, { strict = false }),
       u.desc(desc)
    )
 end
