@@ -1,7 +1,6 @@
 local isn = require("luasnip").indent_snippet_node
 local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
-local nu = require "luasnip-ts-snippets.utils"
 local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
 local py_queries = require "luasnip-ts-snippets.luasnippets.python.queries"
 local ts = vim.treesitter
@@ -23,7 +22,6 @@ local function param_parser(matches)
    local line_nodes = {}
 
    for _, match in matches do
-      nu.i(match)
       local param, ptype = match[2], match[3]
       if param ~= nil then
          local name = ts.query.get_node_text(param, 0)

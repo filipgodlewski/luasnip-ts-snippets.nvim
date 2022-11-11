@@ -28,7 +28,6 @@ end
 -- @return snippet node with the whole docstring
 function M.parse_matches(lookup_array, lines_parser, query, fallback)
    local root = M.get_root_node(lookup_array)
-   nu.i(root)
    if not root then return fallback end
 
    local matches = ts.parse_query(vim.bo.filetype, query):iter_matches(root, 0)
