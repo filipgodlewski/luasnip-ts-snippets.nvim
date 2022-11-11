@@ -44,14 +44,15 @@ local function setup_init(pos)
       l.fmta(declarations.init, {
          params = l.i(1), -- TODO: get params of superclass
          body = l.d(2, function()
-            return l.sn(
+            return isn(
                nil,
                ts_utils.parse_matches(
                   ts_utils.types.fn,
                   param_parser,
                   py_queries.fn,
                   l.t "super().__init__()" -- TODO: get init of superclass
-               )
+               ),
+               "$PARENT_INDENT\t"
             )
          end, { 1 }),
       }),
