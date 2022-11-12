@@ -7,6 +7,4 @@ function M.in_array(array, item)
    return false
 end
 
-function M.i(element) vim.inspect(element) end
-
 return M
