@@ -68,7 +68,7 @@ local function snip_node(desc, lookup_key)
    return l.sn(
       nil,
       l.fmta(declarations[lookup_key], {
-         name = l.r(1, "property_name"),
+         name = l.i(1),
          retval = l.d(2, parse_type, { 1 }),
          getter_body = l.d(3, parse_name, { 1 }),
          rep = l.rep(1),
@@ -97,6 +97,6 @@ return {
          snip_node("Property getter", "getter"),
          snip_node("Property getter+setter", "getter_setter"),
          snip_node("Property getter+setter+deleter", "getter_setter_deleter"),
-      }, { stored = { property_name = l.i(1) } })
+      })
    ),
 }
