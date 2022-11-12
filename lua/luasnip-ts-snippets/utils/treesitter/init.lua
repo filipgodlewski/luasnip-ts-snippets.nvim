@@ -29,7 +29,7 @@ end
 function M.parse_matches(lookup_array, lines_parser, query, fallback, ...)
    local root = M.get_root_node(lookup_array)
    if not root then return fallback end
-   query = ... ~= nil and string.format(query, unpack(...)) or query
+   query = ... ~= nil and string.format(query, table.unpack(...)) or query
 
    local matches = ts.parse_query(vim.bo.filetype, query):iter_matches(root, 0)
    print(vim.inspect(matches))
