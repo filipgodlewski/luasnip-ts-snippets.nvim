@@ -5,8 +5,10 @@ local nu = require "luasnip-ts-snippets.utils"
 local l = require("luasnip.session").config.snip_env
 
 local M = {}
-M.function_types = { "function_definition", "function_declaration" }
-M.class_types = { "class_definition" }
+M.types = {
+   fn = { "function_definition", "function_declaration" },
+   cls = { "class_definition" },
+}
 
 function M.get_root_node(lookup_array)
    ts.get_parser(0):parse()
@@ -24,11 +26,13 @@ end
 -- - table containing interpolation nodes to be parsed by luasnip's fmta()
 -- @param query { string } the query that should return matches
 -- @return snippet node with the whole docstring
-function M.parse_matches(lookup_array, lines_parser, query, fallback)
+function M.parse_matches(lookup_array, lines_parser, query, fallback, ...)
    local root = M.get_root_node(lookup_array)
    if not root then return fallback end
+   query = ... ~= nil and string.format(query, unpack(...)) or query
 
    local matches = ts.parse_query(vim.bo.filetype, query):iter_matches(root, 0)
+   print(vim.inspect(matches))
    local lines, nodes = lines_parser(matches)
    if #nodes == 0 then return fallback end
 

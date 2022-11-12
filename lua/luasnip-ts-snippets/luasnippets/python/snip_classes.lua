@@ -1,24 +1,27 @@
-local isn = require "luasnip".indent_snippet_node
-local l = require "luasnip.session".config.snip_env
+local isn = require("luasnip").indent_snippet_node
+local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
-local nu = require "luasnip-ts-snippets.utils"
 local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
-local py_utils = require "luasnip-ts-snippets.luasnippets.python.utils"
+local py_queries = require "luasnip-ts-snippets.luasnippets.python.queries"
 local ts = vim.treesitter
 
-local class_declaration = [[
+local declarations = {
+   cls = [[
 class <name><inheritance>:
     <body>
-]]
+]],
+   init = [[
+def __init__(self<params>) ->> None:
+    <body>
+]],
+}
 
 local function param_parser(matches)
    local index = 1
    local lines = {}
    local line_nodes = {}
 
-
    for _, match in matches do
-      nu.i(match)
       local param, ptype = match[2], match[3]
       if param ~= nil then
          local name = ts.query.get_node_text(param, 0)
@@ -34,59 +37,72 @@ local function param_parser(matches)
 end
 
 local function setup_init(pos)
-   return isn(pos, l.fmta(py_utils.function_declaration, {
-      decorator = l.t "",
-      name = l.t "__init__",
-      ref = l.t "self",
-      params = l.i(1),
-      retval = l.t "None",
-      docstring = l.t "",
-      body = l.d(2, function()
-         return isn(nil,
-            ts_utils.parse_matches(
-               ts_utils.function_types,
-               param_parser,
-               py_utils.function_query,
-               l.t "super().__init__()"-- TODO: get init of superclass
-            ),
-            "$PARENT_INDENT\t"
-         )
-      end, { 1 }),
-   }), "$PARENT_INDENT\t")
+   return isn(
+      pos,
+      l.fmta(declarations.init, {
+         params = l.i(1), -- TODO: get params of superclass
+         body = l.d(2, function()
+            return isn(
+               nil,
+               ts_utils.parse_matches(
+                  ts_utils.types.fn,
+                  param_parser,
+                  py_queries.fn,
+                  l.t "super().__init__()" -- TODO: get init of superclass
+               ),
+               "$PARENT_INDENT\t"
+            )
+         end, { 1 }),
+      }),
+      "$PARENT_INDENT\t"
+   )
 end
 
 local function snip_node(desc, has_init)
-   return l.sn(nil, l.fmta(class_declaration, {
-      name = l.i(1, "Foo"),
-      inheritance = l.i(2),
-      body = has_init and setup_init(3) or l.i(3, "pass")
-   }), u.desc(desc))
+   return l.sn(
+      nil,
+      l.fmta(declarations.cls, {
+         name = l.i(1, "Foo"),
+         inheritance = l.i(2),
+         body = has_init and setup_init(3) or l.i(3, "pass"),
+      }),
+      u.desc(desc)
+   )
 end
 
 return {
 
-   l.s({
-      trig = "class",
-      name = "Class constructor",
-      dscr = "Create a class",
-   }, l.c(1, {
-      snip_node("With initializer", true),
-      snip_node("No __init__", false),
-   })),
+   l.s(
+      {
+         trig = "class",
+         name = "Class constructor",
+         dscr = "Create a class",
+      },
+      l.c(1, {
+         snip_node("With initializer", true),
+         snip_node("No __init__", false),
+      })
+   ),
 
-   l.s({
-      trig = "super",
-      name = "Super class call",
-      dscr = "Call super class function",
-   }, l.fmta("super().<method>", {
-      method = l.i(1, "__init__()")
-   })),
+   l.s(
+      {
+         trig = "super",
+         name = "Super class call",
+         dscr = "Call super class function",
+      },
+      l.fmta("super().<method>", {
+         method = l.i(1, "__init__()"),
+      })
+   ),
 
-   l.s({
-      trig = ".",
-      name = "instance reference",
-      dscr = "Shortcut for accessing an instance member",
-   }, l.fmta("self.<member>", {
-      member = l.i(1)
-   }))
+   l.s(
+      {
+         trig = ".",
+         name = "instance reference",
+         dscr = "Shortcut for accessing an instance member",
+      },
+      l.fmta("self.<member>", {
+         member = l.i(1),
+      })
+   ),
 }

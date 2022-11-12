@@ -1,6 +1,6 @@
 local M = {}
 
-M.function_query = [[
+M.fn = [[
 (function_definition
    name: (identifier) @is_private (#match? @is_private "^_[a-zA-Z_]*$"))
 (function_definition
@@ -16,15 +16,26 @@ M.function_query = [[
    return_type: (type) @retval)
 ]]
 
-M.class_query = [[
+M.cls = [[
 (class_definition
    name: (identifier) @cls_name)
 ]]
 
-M.function_declaration = [[
-<decorator>
-def <name>(<ref><params>) ->> <retval>:
-    <docstring><body>
+M.private_formatted = [[
+(class_definition body:
+  (block [
+    (function_definition
+      name: (identifier) @fn_name (#eq? @fn_name "__init__")
+      body: (block
+        (expression_statement
+          (assignment
+            left: (attribute attribute: (identifier) @iname (#eq? @iname "_%s"))
+            type: (type) @itype))))
+    (expression_statement
+      (assignment
+        left: (identifier) @aname (#eq? @aname "_%s")
+        type: (type) @atype))
+  ]))
 ]]
 
 return M
