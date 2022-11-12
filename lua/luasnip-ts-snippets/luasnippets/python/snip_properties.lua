@@ -1,5 +1,8 @@
 local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
+local nu = require "luasnip-ts-snippets.utils"
+local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
+local py_queries = require "luasnip-ts-snippets.luasnippets.python.queries"
 
 local declarations = {
    getter = [[
@@ -31,12 +34,35 @@ local declarations = {
    ]],
 }
 
+local function priv_attr_parser(matches) end
+
+local function priv_attr_type_parser(matches)
+   nu.i(matches)
+   for _, match in matches do
+      nu.i(match)
+   end
+   return "%s", l.i(1, "None")
+end
+
 local function snip_node(desc, lookup_key)
    return l.sn(
       nil,
       l.fmta(declarations[lookup_key], {
          name = l.i(1, "foo"), -- TODO: add node remembering on switch
-         retval = l.i(2, "Any"), -- TODO: If possible, take type of _foo, else Any
+         retval = l.d(2, function(args)
+            local name = args[1][1]
+            return l.sn(
+               nil,
+               ts_utils.parse_matches(
+                  ts_utils.types.cls,
+                  priv_attr_type_parser,
+                  py_queries.private_formatted,
+                  l.i "Any",
+                  name,
+                  name
+               )
+            )
+         end, { 1 }),
          getter_body = l.d(3, function(args)
             local name = args[1][1] -- TODO: If can't locate _foo in class, then 'return '
             return l.sn(nil, l.i(1, string.format("return self._%s", name)))
