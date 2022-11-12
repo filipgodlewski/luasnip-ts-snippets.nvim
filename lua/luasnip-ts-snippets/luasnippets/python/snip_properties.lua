@@ -1,8 +1,8 @@
 local l = require("luasnip.session").config.snip_env
 local u = require "luasnip-ts-snippets.utils.snip"
-local nu = require "luasnip-ts-snippets.utils"
 local ts_utils = require "luasnip-ts-snippets.utils.treesitter"
 local py_queries = require "luasnip-ts-snippets.luasnippets.python.queries"
+local ts = vim.treesitter
 
 local declarations = {
    getter = [[
@@ -34,51 +34,52 @@ local declarations = {
    ]],
 }
 
-local function priv_attr_parser(matches) end
-
-local function priv_attr_type_parser(matches)
-   nu.i(matches)
+local function type_parser(matches)
+   local atype = "Any"
    for _, match in matches do
-      nu.i(match)
+      atype = ts.query.get_node_text(match[3] or match[5], 0)
+      break
    end
-   return "%s", l.i(1, "None")
+   return "<>", { l.i(1, atype) }
 end
+
+local function name_parser(matches)
+   local retval = "return "
+   local aname
+   for _, match in matches do
+      aname = ts.query.get_node_text(match[2] or match[4], 0)
+      break
+   end
+   return "<>", { l.i(1, aname ~= nil and (retval .. "self." .. aname) or retval) }
+end
+
+local function parse_priv(args, parser, fallback)
+   local name = args[1][1]
+   return l.sn(
+      nil,
+      ts_utils.parse_matches(ts_utils.types.cls, parser, py_queries.private_formatted, fallback, { name, name })
+   )
+end
+
+local function parse_type(args) return parse_priv(args, type_parser, l.i(1, "Any")) end
+local function parse_name(args) return parse_priv(args, name_parser, l.i(1, "return")) end
 
 local function snip_node(desc, lookup_key)
    return l.sn(
       nil,
       l.fmta(declarations[lookup_key], {
-         name = l.i(1, "foo"), -- TODO: add node remembering on switch
-         retval = l.d(2, function(args)
-            local name = args[1][1]
-            return l.sn(
-               nil,
-               ts_utils.parse_matches(
-                  ts_utils.types.cls,
-                  priv_attr_type_parser,
-                  py_queries.private_formatted,
-                  l.i "Any",
-                  name,
-                  name
-               )
-            )
-         end, { 1 }),
-         getter_body = l.d(3, function(args)
-            local name = args[1][1] -- TODO: If can't locate _foo in class, then 'return '
-            return l.sn(nil, l.i(1, string.format("return self._%s", name)))
-         end, { 1 }),
+         name = l.r(1, "property_name"),
+         retval = l.d(2, parse_type, { 1 }),
+         getter_body = l.d(3, parse_name, { 1 }),
          rep = l.rep(1),
          value = l.i(4, "value"),
-         value_type = l.i(5, "Any"),
+         value_type = l.d(5, parse_type, { 1 }),
          setter_body = l.d(6, function(args)
             local name = args[1][1]
             local value = args[2][1]
             return l.sn(nil, l.i(1, string.format("self._%s = %s", name, value)))
          end, { 1, 4 }),
-         deleter_body = l.d(7, function(args)
-            local name = args[1][1] -- TODO: If can't locate _foo in class, then 'return '
-            return l.sn(nil, l.i(1, string.format("del self._%s", name)))
-         end, { 1 }),
+         deleter_body = l.d(7, parse_name, { 1 }),
       }, { strict = false }),
       u.desc(desc)
    )
@@ -96,6 +97,6 @@ return {
          snip_node("Property getter", "getter"),
          snip_node("Property getter+setter", "getter_setter"),
          snip_node("Property getter+setter+deleter", "getter_setter_deleter"),
-      })
+      }, { stored = { property_name = l.i(1) } })
    ),
 }

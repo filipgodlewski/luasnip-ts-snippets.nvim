@@ -22,19 +22,20 @@ M.cls = [[
 ]]
 
 M.private_formatted = [[
-(class_definition
-  body: [
-    (expression_statement (assignment left: (identifier) @name (#eq? @name "_%s")))
+(class_definition body:
+  (block [
     (function_definition
-      (body: (expression_statement (assignment left: (identifier) @name (#eq? @name "_%s")))))
-  ])
-
-(class_definition
-  body: [
-    (expression_statement (assignment type: (type) @atype))
-    (function_definition
-      (expression_statement (assignment type: (type) @atype)))
-  ])
+      name: (identifier) @fn_name (#eq? @fn_name "__init__")
+      body: (block
+        (expression_statement
+          (assignment
+            left: (attribute attribute: (identifier) @iname (#eq? @iname "_%s"))
+            type: (type) @itype))))
+    (expression_statement
+      (assignment
+        left: (identifier) @aname (#eq? @aname "_%s")
+        type: (type) @atype))
+  ]))
 ]]
 
 return M
