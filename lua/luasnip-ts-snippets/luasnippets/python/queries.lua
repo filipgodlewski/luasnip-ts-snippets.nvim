@@ -1,6 +1,7 @@
 local M = {}
 
 M.fn = [[
+;; query
 (function_definition
    name: (identifier) @is_private (#match? @is_private "^_[a-zA-Z_]*$"))
 (function_definition
@@ -17,11 +18,13 @@ M.fn = [[
 ]]
 
 M.cls = [[
+;; query
 (class_definition
    name: (identifier) @cls_name)
 ]]
 
 M.private_formatted = [[
+;; query
 (class_definition body:
   (block [
     (function_definition
