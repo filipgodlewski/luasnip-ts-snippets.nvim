@@ -24,8 +24,8 @@ local function param_parser(matches)
    for _, match in matches do
       local param, ptype = match[2], match[3]
       if param ~= nil then
-         local name = ts.query.get_node_text(param, 0)
-         local type = ptype == nil and "Any" or ts.query.get_node_text(ptype, 0)
+         local name = ts.get_node_text(param, 0)
+         local type = ptype == nil and "Any" or ts.get_node_text(ptype, 0)
          table.insert(lines, string.format("self._<>: %s = %s", type, name))
          table.insert(line_nodes, l.i(index, name))
       end

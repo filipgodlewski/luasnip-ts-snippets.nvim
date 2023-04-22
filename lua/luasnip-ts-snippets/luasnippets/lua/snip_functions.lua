@@ -26,7 +26,7 @@ local function param_parser(matches)
 
    for _, match in matches do
       if match[1] == nil then return "", {} end
-      local param_name = ts.query.get_node_text(match[1], 0)
+      local param_name = ts.get_node_text(match[1], 0)
       local line = string.format("-- @param %s { <> } <>", param_name)
       table.insert(lines, line)
       table.insert(line_nodes, l.i(index, "any"))

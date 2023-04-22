@@ -37,7 +37,7 @@ local declarations = {
 local function type_parser(matches)
    local atype = "Any"
    for _, match in matches do
-      atype = ts.query.get_node_text(match[3] or match[5], 0)
+      atype = ts.get_node_text(match[3] or match[5], 0)
       break
    end
    return "<>", { l.i(1, atype) }
@@ -47,7 +47,7 @@ local function name_parser(matches)
    local retval = "return "
    local aname
    for _, match in matches do
-      aname = ts.query.get_node_text(match[2] or match[4], 0)
+      aname = ts.get_node_text(match[2] or match[4], 0)
       break
    end
    return "<>", { l.i(1, aname ~= nil and (retval .. "self." .. aname) or retval) }

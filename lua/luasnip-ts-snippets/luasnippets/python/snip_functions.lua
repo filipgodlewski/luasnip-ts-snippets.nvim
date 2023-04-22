@@ -23,13 +23,13 @@ local function param_parser(matches)
       if param ~= nil then
          local args_header = "\nArgs:"
          if not nu.in_array(lines, args_header) then table.insert(lines, args_header) end
-         local name = ts.query.get_node_text(param, 0)
-         local type = ptype == nil and "Any" or ts.query.get_node_text(ptype, 0)
+         local name = ts.get_node_text(param, 0)
+         local type = ptype == nil and "Any" or ts.get_node_text(ptype, 0)
          table.insert(lines, string.format("\t%s (%s): <>", name, type))
          table.insert(line_nodes, l.i(index, "..."))
       else
          table.insert(lines, "\nReturns:")
-         table.insert(lines, string.format("\t%s: <>", ts.query.get_node_text(retval, 0)))
+         table.insert(lines, string.format("\t%s: <>", ts.get_node_text(retval, 0)))
          table.insert(line_nodes, l.i(index, "..."))
       end
       index = index + 1
